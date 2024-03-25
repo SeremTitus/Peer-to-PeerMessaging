@@ -1,0 +1,133 @@
+[gd_scene load_steps=13 format=3 uid="uid://iy7fa52wjrvs"]
+
+[ext_resource type="Script" path="res://GUI/Main.gd" id="1_e6cta"]
+[ext_resource type="Shader" path="res://GUI/CircularIcon.gdshader" id="2_eco23"]
+[ext_resource type="Texture2D" uid="uid://d3rf6aw43rb02" path="res://assets/DefaultProfilePic.jpeg" id="2_g2cup"]
+[ext_resource type="PackedScene" uid="uid://6cptows5nsga" path="res://GUI/generate_profile.tscn" id="4_imfmt"]
+[ext_resource type="PackedScene" uid="uid://cj8vlqcsnptyc" path="res://GUI/chat_select.tscn" id="4_jdag6"]
+[ext_resource type="PackedScene" uid="uid://hli8b2pt7a80" path="res://GUI/chat_area.tscn" id="5_bghho"]
+[ext_resource type="PackedScene" uid="uid://ciisukmii1rke" path="res://GUI/add_contact.tscn" id="5_q5feh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o5mhe"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bjbg6"]
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2xr2w"]
+shader = ExtResource("2_eco23")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b6kea"]
+content_margin_left = 4.0
+content_margin_right = 3.0
+bg_color = Color(0.306923, 0.306923, 0.306923, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xh14w"]
+content_margin_left = 4.0
+content_margin_right = 3.0
+bg_color = Color(0.423529, 0.423529, 0.423529, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_e6cta")
+
+[node name="Body" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Sibebar" type="PanelContainer" parent="Body"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_o5mhe")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Body/Sibebar"]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Body/Sibebar/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bjbg6")
+
+[node name="PanelContainer" type="PanelContainer" parent="Body/Sibebar/VBoxContainer/PanelContainer"]
+clip_contents = true
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="mypic" type="TextureRect" parent="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_2xr2w")
+layout_mode = 2
+texture = ExtResource("2_g2cup")
+expand_mode = 3
+
+[node name="IPLable" type="Label" parent="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="AddContact" type="Button" parent="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_b6kea")
+theme_override_styles/hover = SubResource("StyleBoxFlat_b6kea")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_xh14w")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_b6kea")
+theme_override_styles/focus = SubResource("StyleBoxFlat_b6kea")
+text = "New chat"
+
+[node name="HSeparator" type="HSeparator" parent="Body/Sibebar/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Body/Sibebar/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ChatsContainer" type="VBoxContainer" parent="Body/Sibebar/VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ChatSelect" parent="Body/Sibebar/VBoxContainer/ScrollContainer/ChatsContainer" instance=ExtResource("4_jdag6")]
+layout_mode = 2
+
+[node name="ChatArea" parent="Body" instance=ExtResource("5_bghho")]
+layout_mode = 2
+
+[node name="AddContact" parent="." instance=ExtResource("5_q5feh")]
+unique_name_in_owner = true
+visible = false
+
+[node name="generateProfile" parent="." instance=ExtResource("4_imfmt")]
+visible = false
+
+[connection signal="pressed" from="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/AddContact" to="AddContact" method="popup"]

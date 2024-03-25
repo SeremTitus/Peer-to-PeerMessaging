@@ -1,0 +1,129 @@
+[gd_scene load_steps=10 format=3 uid="uid://hli8b2pt7a80"]
+
+[ext_resource type="Shader" path="res://GUI/CircularIcon.gdshader" id="1_gyep4"]
+[ext_resource type="Script" path="res://GUI/chat_area.gd" id="1_mvthv"]
+[ext_resource type="Texture2D" uid="uid://d3rf6aw43rb02" path="res://assets/DefaultProfilePic.jpeg" id="2_4yngn"]
+[ext_resource type="PackedScene" uid="uid://c7sqbujvlrwui" path="res://GUI/chat_bubble.tscn" id="4_gc4pu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ygfmk"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.180392, 0.180392, 0.180392, 1)
+border_color = Color(0.133333, 0.133333, 0.133333, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2xr2w"]
+shader = ExtResource("1_gyep4")
+
+[sub_resource type="LabelSettings" id="LabelSettings_f1eol"]
+font_size = 20
+
+[sub_resource type="LabelSettings" id="LabelSettings_j20gr"]
+font_size = 13
+font_color = Color(0.12549, 0.423529, 0.576471, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xikni"]
+content_margin_left = 50.0
+content_margin_right = 8.0
+bg_color = Color(0.211765, 0.564706, 0.811765, 1)
+corner_radius_top_left = 20
+corner_radius_bottom_right = 60
+corner_radius_bottom_left = 20
+
+[node name="ChatArea" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ygfmk")
+script = ExtResource("1_mvthv")
+
+[node name="ChatContent" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="ChatContent"]
+clip_contents = true
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="ChatContent/PanelContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="pic" type="TextureRect" parent="ChatContent/PanelContainer/HBoxContainer2"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_2xr2w")
+layout_mode = 2
+texture = ExtResource("2_4yngn")
+expand_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ChatContent/PanelContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="username" type="Label" parent="ChatContent/PanelContainer/HBoxContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "user2
+"
+label_settings = SubResource("LabelSettings_f1eol")
+horizontal_alignment = 1
+
+[node name="status" type="Label" parent="ChatContent/PanelContainer/HBoxContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Offline"
+label_settings = SubResource("LabelSettings_j20gr")
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ChatContent"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+
+[node name="Chats" type="VBoxContainer" parent="ChatContent/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="chat_bubble" parent="ChatContent/ScrollContainer/Chats" instance=ExtResource("4_gc4pu")]
+layout_mode = 2
+
+[node name="text" parent="ChatContent/ScrollContainer/Chats/chat_bubble/VBoxContainer" index="0"]
+text = "Hello"
+
+[node name="chat_bubble2" parent="ChatContent/ScrollContainer/Chats" instance=ExtResource("4_gc4pu")]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_xikni")
+on_right = true
+
+[node name="text" parent="ChatContent/ScrollContainer/Chats/chat_bubble2/VBoxContainer" index="0"]
+text = "Hello, too"
+
+[node name="SendArea" type="HBoxContainer" parent="ChatContent"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+
+[node name="Chatbox" type="TextEdit" parent="ChatContent/SendArea"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Send" type="Button" parent="ChatContent/SendArea"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+text = "send"
+
+[connection signal="pressed" from="ChatContent/SendArea/Send" to="." method="_on_send_pressed"]
+
+[editable path="ChatContent/ScrollContainer/Chats/chat_bubble"]
+[editable path="ChatContent/ScrollContainer/Chats/chat_bubble2"]

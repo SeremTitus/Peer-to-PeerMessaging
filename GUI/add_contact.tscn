@@ -1,0 +1,129 @@
+[gd_scene load_steps=8 format=3 uid="uid://ciisukmii1rke"]
+
+[ext_resource type="Script" path="res://GUI/AddContact.gd" id="1_v4t0t"]
+[ext_resource type="Shader" path="res://GUI/CircularIcon.gdshader" id="2_eh5ca"]
+[ext_resource type="Texture2D" uid="uid://d3rf6aw43rb02" path="res://assets/DefaultProfilePic.jpeg" id="3_xi6s2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qd543"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.92549, 0.796078, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_0mgk0"]
+font_size = 20
+
+[sub_resource type="LabelSettings" id="LabelSettings_me7h3"]
+font_size = 13
+font_color = Color(1, 0.509804, 0.243137, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3m336"]
+shader = ExtResource("2_eh5ca")
+
+[node name="AddContact" type="Window"]
+initial_position = 2
+size = Vector2i(500, 300)
+borderless = true
+script = ExtResource("1_v4t0t")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qd543")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Space" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Add new Contact"
+label_settings = SubResource("LabelSettings_0mgk0")
+horizontal_alignment = 1
+
+[node name="Space3" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "IP : "
+
+[node name="LineEdit" type="LineEdit" parent="PanelContainer/VBoxContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter IP Address User : e.g. 127.000.000.1"
+virtual_keyboard_type = 2
+
+[node name="Label2" type="Label" parent="PanelContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Username : "
+
+[node name="Username" type="LineEdit" parent="PanelContainer/VBoxContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Display name, eg Bob/ Jane"
+
+[node name="status" type="Label" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Searching..."
+label_settings = SubResource("LabelSettings_me7h3")
+horizontal_alignment = 1
+
+[node name="Pic" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="pic" type="TextureRect" parent="PanelContainer/VBoxContainer/Pic"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_3m336")
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("3_xi6s2")
+expand_mode = 2
+
+[node name="Container" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="Save" type="Button" parent="PanelContainer/VBoxContainer/Container"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Add"
+
+[node name="Cancel" type="Button" parent="PanelContainer/VBoxContainer/Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Cancel"
+
+[connection signal="about_to_popup" from="." to="." method="_on_about_to_popup"]
+[connection signal="text_changed" from="PanelContainer/VBoxContainer/GridContainer/LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Container/Save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Container/Cancel" to="." method="_on_cancel_pressed"]
