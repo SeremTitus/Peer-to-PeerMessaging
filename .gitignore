@@ -1,0 +1,11 @@
+.import
+*.import
+todo.txt
+builds
+android/build
+.gdignore
+exports
+.godot
+*.tmp
+buildbin
+android

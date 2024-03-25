@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7sqbujvlrwui"]
+
+[ext_resource type="Script" path="res://GUI/chat_bubble.gd" id="1_j4dyv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_um4vj"]
+content_margin_left = 50.0
+content_margin_right = 8.0
+bg_color = Color(0, 0.639216, 0.392157, 1)
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 60
+
+[node name="chat_bubble" type="PanelContainer"]
+custom_minimum_size = Vector2(500, 100)
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_um4vj")
+script = ExtResource("1_j4dyv")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="text" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[connection signal="ready" from="VBoxContainer/text" to="." method="_on_text_ready"]
