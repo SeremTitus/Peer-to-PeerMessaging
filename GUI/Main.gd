@@ -1,7 +1,6 @@
 extends Control
 
 var count = 0
-var P2P: P2PManager = P2PManager.new()
 const CHAT_SELECT = preload("res://GUI/chat_select.tscn")
 
 func _ready() -> void:

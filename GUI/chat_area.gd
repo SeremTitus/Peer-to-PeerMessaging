@@ -39,6 +39,7 @@ func  on_current_change() -> void:
 
 func on_new_message(message:Message) -> void:
 	if message.origin_ip != GlobalState.currentChat and message.origin_ip != GlobalState.myIP : return
+	GlobalState.usingDB.read_messages(GlobalState.currentChat)
 	var new_chat = CHAT_BUBBLE.instantiate()
 	new_chat.on_right = (GlobalState.myIP == message.origin_ip)
 	new_chat.text = str(message.data)

@@ -12,7 +12,6 @@ var myIP:String:
 		myIP = value
 		currentChat = ""
 		myIPChanged.emit()
-		P2P = P2PManager.new(myIP)
 
 var currentChat:String:
 	set(value):
@@ -23,9 +22,11 @@ var usingDB:dbHandler = dbHandler.new()
 var P2P: P2PManager = P2PManager.new()
 
 func _ready():
+	add_child(P2P)
 	userOnline.connect(update_pic)
 	for profile in GlobalState.usingDB.get_profiles():
-		myIP = profile["myIP"]
+		if myIP in generate_myIP():
+			myIP = profile["myIP"]
 
 func _process(_delta):
 	while len(P2P.new_messages) > 0:

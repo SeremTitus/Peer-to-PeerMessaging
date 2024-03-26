@@ -1,34 +1,22 @@
-class_name P2PManager extends RefCounted
+class_name P2PManager extends Node
 
-#for signal
 var new_messages:Array =[]
 var new_online: Array = []
-#
-
-
-
 
 const UDP_port:int = 24524
 var address:String = "*"
 
 var server:UDPServer = UDPServer.new()
 var peers:Array[PacketPeerUDP] = []
-
-var process_timer:TrueTimmer = TrueTimmer.new()
 var process:bool = true
 
-func _init(new_address:String = "*",bind_address: String = "*") -> void:
-	address = new_address
-	address = bind_address
-	process_timer.timeout.connect(start_timer)
+func _ready():
 	start_listening()
-	start_timer()
 
-func  start_timer():
-	process_tick()
-	process_timer.start(1.0)
-
-func process_tick() -> void:
+func _init(new_address:String = "*") -> void:
+	address = new_address
+	
+func _process(delta):
 	if not process:
 		return
 	server.poll()
@@ -38,12 +26,14 @@ func process_tick() -> void:
 		peers.append(peer)
 	for peer in peers:
 		get_message(peer)
-	
+
 func get_message(peer:PacketPeerUDP) -> void:
 	if not peer.is_socket_connected():
 		peers.remove_at(peers.bsearch(peer))
 	var packet_str:String = peer.get_packet().get_string_from_utf8()
 	if packet_str.is_empty(): return
+	print(packet_str)
+	print("2",peer.get_var(true))
 	var json:JSON = JSON.new()
 	var error:Error = json.parse(packet_str)
 	if error == OK:
@@ -57,27 +47,27 @@ func get_message(peer:PacketPeerUDP) -> void:
 
 func send_message(recieveAddress: String, message:Message) -> Error:
 	if message == null or recieveAddress.is_empty() : return FAILED
+	var err:Error
 	for peer in peers:
 		if not peer.is_socket_connected():
 			peers.remove_at(peers.bsearch(peer))
 			continue
 		if peer.get_packet_ip() == recieveAddress:
-			var err:Error = peer.put_packet(JSON.stringify(message.to_json().data).to_utf8_buffer())
+			err = peer.put_packet(JSON.stringify(message.to_json().data).to_utf8_buffer())
 			if err == OK and not message.is_system_message:
 				GlobalState.usingDB.save_message(recieveAddress,message)
 			return err
 	var udp := PacketPeerUDP.new()
-	udp.connect_to_host(recieveAddress, UDP_port)
-	var err:Error = udp.put_packet(JSON.stringify(message.to_json().data).to_utf8_buffer())
+	printerr(udp.connect_to_host(recieveAddress, UDP_port))
+	err = udp.put_packet(JSON.stringify(message.to_json().data).to_utf8_buffer())
 	if err == OK:
 		if not message.is_system_message:
 			GlobalState.usingDB.save_message(recieveAddress,message)
 		peers.append(udp)
-		
 	return err
 	
 func start_listening() -> void:
-	server.listen(UDP_port,address)
+	print(error_string(server.listen(UDP_port)))
 	process = true
 
 func stop_listening() -> void:
@@ -86,10 +76,8 @@ func stop_listening() -> void:
 	
 func request_check_online(IPaddress: String) -> void:
 	send_message(IPaddress,Message.make_system("online",null))
-	
+
 func handle_system(message:Message) -> void:
 	if message.command == "online":
 		message.data = Marshalls.base64_to_variant(message.data,true)
 		new_online.append([message.origin_ip,message.data["pic"]])
-		
-

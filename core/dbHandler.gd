@@ -39,6 +39,8 @@ func save_message(contactIP: String,message:Message, myIP:String = GlobalState.m
 		"minute" : message.time_stamp.minute,
 		"second" : message.time_stamp.second
 		}
+	if message.origin_ip == myIP:
+		data_dict["read_status"] = 1
 	if db.insert_row(table_name, data_dict):
 		return OK
 	return FAILED
