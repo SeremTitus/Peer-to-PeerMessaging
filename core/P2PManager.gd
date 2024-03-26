@@ -57,7 +57,8 @@ func send_message(recieveAddress: String, message:Message) -> Error:
 				GlobalState.usingDB.save_message(recieveAddress,message)
 			return err
 	var udp := PacketPeerUDP.new()
-	udp.connect_to_host(recieveAddress, UDP_port)
+	err = udp.connect_to_host(recieveAddress, UDP_port)
+	if err != OK: return err
 	err = udp.put_packet(JSON.stringify(message.to_json().data).to_utf8_buffer())
 	if err == OK:
 		if not message.is_system_message:
