@@ -9,9 +9,9 @@ func _init():
 	db.open_db()
 
 
-func save_message(message:Message, myIP:String = GlobalState.myIP) -> Error:
+func save_message(contactIP: String,message:Message, myIP:String = GlobalState.myIP) -> Error:
 	if myIP.is_empty() or message.origin_ip.is_empty() or message == null or message.is_system_message: return FAILED
-	var table_name: String = str("m" + myIP + message.origin_ip).replace(".","").strip_escapes()
+	var table_name: String = str("m" + myIP + contactIP).replace(".","").strip_escapes()
 	var table_dict: Dictionary = {
 		"id" : {"data_type":"int", "auto_increment": true},
 		"origin_ip": {"data_type":"text"},

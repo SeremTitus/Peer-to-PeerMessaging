@@ -55,6 +55,7 @@ func rebuild_messages() -> void:
 func _on_send_pressed():
 	if %Chatbox.text.is_empty(): return
 	var send_message: Message = Message.make_text(%Chatbox.text)
-	print(GlobalState.P2P.send_message(GlobalState.currentChat,send_message))
-	on_new_message(send_message)
-	%Chatbox.text = ""
+	var err:Error = GlobalState.P2P.send_message(GlobalState.currentChat,send_message)
+	if err == OK:
+		on_new_message(send_message)
+		%Chatbox.text = ""

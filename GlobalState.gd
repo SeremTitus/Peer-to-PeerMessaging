@@ -12,6 +12,7 @@ var myIP:String:
 		myIP = value
 		currentChat = ""
 		myIPChanged.emit()
+		P2P = P2PManager.new(myIP)
 
 var currentChat:String:
 	set(value):

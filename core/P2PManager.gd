@@ -17,8 +17,9 @@ var peers:Array[PacketPeerUDP] = []
 var process_timer:TrueTimmer = TrueTimmer.new()
 var process:bool = true
 
-func _init(new_address:String = "*") -> void:
+func _init(new_address:String = "*",bind_address: String = "*") -> void:
 	address = new_address
+	address = bind_address
 	process_timer.timeout.connect(start_timer)
 	start_listening()
 	start_timer()
@@ -51,7 +52,7 @@ func get_message(peer:PacketPeerUDP) -> void:
 			handle_system(message)
 		else:
 			if message.origin_ip == GlobalState.myIP: return
-			GlobalState.usingDB.save_message(message)
+			GlobalState.usingDB.save_message(peer.get_packet_ip(),message)
 			new_messages.append(message)
 
 func send_message(recieveAddress: String, message:Message) -> Error:
@@ -63,15 +64,16 @@ func send_message(recieveAddress: String, message:Message) -> Error:
 		if peer.get_packet_ip() == recieveAddress:
 			var err:Error = peer.put_packet(JSON.stringify(message.to_json().data).to_utf8_buffer())
 			if err == OK and not message.is_system_message:
-				GlobalState.usingDB.save_message(message)
+				GlobalState.usingDB.save_message(recieveAddress,message)
 			return err
 	var udp := PacketPeerUDP.new()
 	udp.connect_to_host(recieveAddress, UDP_port)
 	var err:Error = udp.put_packet(JSON.stringify(message.to_json().data).to_utf8_buffer())
 	if err == OK:
 		if not message.is_system_message:
-			GlobalState.usingDB.save_message(message)
+			GlobalState.usingDB.save_message(recieveAddress,message)
 		peers.append(udp)
+		
 	return err
 	
 func start_listening() -> void:
