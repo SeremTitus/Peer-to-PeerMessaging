@@ -106,8 +106,13 @@ visible_ratio = 1.5
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
+[node name="TimerChangeOffline" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 10.0
+autostart = true
+
 [node name="TimerCheckOnline" type="Timer" parent="."]
-wait_time = 30.0
+wait_time = 2.0
 autostart = true
 
 [node name="menu" type="Window" parent="."]
@@ -142,6 +147,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_fndwc")
 text = "Delete"
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="timeout" from="TimerChangeOffline" to="." method="offline"]
 [connection signal="timeout" from="TimerCheckOnline" to="." method="_on_timer_check_online_timeout"]
 [connection signal="about_to_popup" from="menu" to="." method="_on_window_about_to_popup"]
 [connection signal="close_requested" from="menu" to="." method="_on_menu_close_requested"]

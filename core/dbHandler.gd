@@ -5,7 +5,7 @@ var db: SQLite = SQLite.new()
 
 func _init():
 	db.path = "user://store.db"
-	db.verbosity_level = SQLite.VERY_VERBOSE
+	db.verbosity_level = SQLite.QUIET
 	db.open_db()
 
 
@@ -113,7 +113,8 @@ func update_profile(myIP:String = GlobalState.myIP ,username:String = "",profile
 	var table_name: String = "me"
 	var data_dict: Dictionary = Dictionary()
 	var query_conditions:String = "myIP = '" + myIP +"'"
-	data_dict["username"] = username
+	if  not username.is_empty():
+		data_dict["username"] = username
 	if profile_pic != null:
 		data_dict["profile_pic"] = encode_to_blob(profile_pic)
 	if db.update_rows(table_name,query_conditions , data_dict):

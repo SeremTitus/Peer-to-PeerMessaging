@@ -6,6 +6,7 @@ const CHAT_SELECT = preload("res://GUI/chat_select.tscn")
 func _ready() -> void:
 	if GlobalState.myIP.is_empty(): $generateProfile.popup()
 	GlobalState.myIPChanged.connect(setup_myHeader_info)
+	GlobalState.myIPChanged.connect(setup_contact_select)
 	GlobalState.myContactsChanged.connect(setup_contact_select)
 	setup_myHeader_info()
 	setup_contact_select()

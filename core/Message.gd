@@ -1,15 +1,22 @@
 class_name Message extends RefCounted
 
-var origin_ip: String = GlobalState.myIP
+var origin_ip: String = GlobalState.myIP 
+var origin_username: String
 var time_stamp: DateTime = DateTime.now()
 var data
 
 var is_system_message: bool = false
 var command: String
 
+func _init():
+	for profile in GlobalState.usingDB.get_profiles():
+			if profile["myIP"] in GlobalState.myIP:
+				origin_username = profile["username"]
+
 func  _to_string() -> String:
 	var output: Dictionary = {
 		"origin_ip": origin_ip,
+		"origin_username" : origin_username,
 		"is_system_message": is_system_message,
 		"data": data,
 		"time_stamp" : time_stamp,
@@ -20,6 +27,7 @@ func  _to_string() -> String:
 func to_json():
 	var output: Dictionary = {
 		"origin_ip": origin_ip,
+		"origin_username":origin_username,
 		"is_system_message": is_system_message,
 		"data": data,
 		"time_stamp" : {
@@ -43,6 +51,7 @@ static func from_json(json:JSON) -> Message:
 	output.time_stamp = DateTime.now()
 	output.data = json.data["data"]
 	output.origin_ip = json.data["origin_ip"]
+	output.origin_username = json.data["origin_username"]
 	output.is_system_message = json.data["is_system_message"]
 	output.time_stamp = DateTime.new()
 	for key in json.data["time_stamp"]:

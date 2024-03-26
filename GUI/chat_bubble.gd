@@ -16,7 +16,7 @@ extends PanelContainer
 
 		else:
 			set_h_size_flags(Control.SIZE_SHRINK_BEGIN)
-			new_style.bg_color = Color("#4e83f2")
+			new_style.bg_color = Color("#00a364")
 			new_style.corner_radius_bottom_left = 60
 			new_style.corner_radius_bottom_right = 20
 			new_style.corner_radius_top_left = 0

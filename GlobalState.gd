@@ -21,16 +21,30 @@ var currentChat:String:
 var usingDB:dbHandler = dbHandler.new()
 var P2P: P2PManager = P2PManager.new()
 
+var verifiedIPs: Array = []:
+	set(value):
+		verifiedIPs = value
+		if not myIP.is_empty(): return
+		for profile in GlobalState.usingDB.get_profiles():
+			if profile["myIP"] in verifiedIPs:
+				myIP = profile["myIP"]
+
 func _ready():
 	add_child(P2P)
 	userOnline.connect(update_pic)
-	for profile in GlobalState.usingDB.get_profiles():
-		if myIP in generate_myIP():
-			myIP = profile["myIP"]
+	P2P.respondingIP.connect(func(x) :
+		verifiedIPs.append(x)
+		verifiedIPs = verifiedIPs
+		)
+	P2P.get_responding_IP(generate_myIP())
 
 func _process(_delta):
 	while len(P2P.new_messages) > 0:
-		new_message.emit(P2P.new_messages.pop_at(0))
+		var message: Message = P2P.new_messages.pop_at(0)
+		if message.origin_ip != myIP:
+			GlobalState.usingDB.add_contact(message.origin_ip,message.origin_username)
+			myContactsChanged.emit()
+		new_message.emit(message)
 	while len(P2P.new_online) > 0:
 		var item = P2P.new_online.pop_at(0)
 		userOnline.emit(item[0],item[1])

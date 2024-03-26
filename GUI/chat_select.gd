@@ -60,13 +60,17 @@ func on_change_current():
 	
 
 func _on_timer_check_online_timeout():
+	GlobalState.P2P.request_check_online(contactIP)
+	
+func offline():
 	var new_style = get_theme_stylebox("panel").duplicate(true)
 	new_style.set_border_width_all(0)
 	add_theme_stylebox_override("panel",new_style)
-	GlobalState.P2P.request_check_online(contactIP)
-
+	
 func online(ip,set_pic):
 	if ip == contactIP:
+		%TimerChangeOffline.stop()
+		%TimerChangeOffline.start()
 		if set_pic != null:
 			pic.texture = set_pic
 		var new_style = get_theme_stylebox("panel").duplicate(true)

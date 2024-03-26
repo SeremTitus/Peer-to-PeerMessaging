@@ -3,14 +3,22 @@ extends PanelContainer
 
 @onready var default_pic = %pic.texture.duplicate(true)
 const CHAT_BUBBLE = preload("res://GUI/chat_bubble.tscn")
+var offlineTimer: Timer = Timer.new()
 
 func _ready():
 	GlobalState.currentChatChanged.connect(on_current_change)
 	GlobalState.userOnline.connect(online)
+	GlobalState.new_message.connect(on_new_message)
 	on_current_change()
+	offlineTimer.autostart = true
+	offlineTimer.wait_time =10
+	offlineTimer.timeout.connect(func(): %status.text = "Offline")
+	add_child(offlineTimer)
 
 func online(ip,pic) -> void:
 	if ip == GlobalState.currentChat:
+		offlineTimer.stop()
+		offlineTimer.start()
 		%status.text = "Online"
 		if pic != null:
 			%pic.texture = pic
@@ -44,7 +52,7 @@ func on_new_message(message:Message) -> void:
 	new_chat.on_right = (GlobalState.myIP == message.origin_ip)
 	new_chat.text = str(message.data)
 	%Chats.add_child(new_chat)
-	%ScrollContainer.ensure_control_visible(new_chat)
+	%ScrollContainer.set_deferred("scroll_vertical", (%ScrollContainer.scroll_vertical + 10) * 5000)
 
 func rebuild_messages() -> void:
 	for child in %Chats.get_children():
