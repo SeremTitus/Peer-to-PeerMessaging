@@ -88,5 +88,5 @@ func _on_menu_close_requested():
 	%menu.hide()
 
 func _on_delete_pressed():
-	print(GlobalState.usingDB.delete_contact(contactIP))
+	GlobalState.usingDB.delete_contact(contactIP)
 	GlobalState.myContactsChanged.emit()

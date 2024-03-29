@@ -5,7 +5,7 @@ var db: SQLite = SQLite.new()
 
 func _init():
 	db.path = "user://store.db"
-	db.verbosity_level = SQLite.QUIET
+	db.verbosity_level = SQLite.NORMAL
 	db.open_db()
 
 
@@ -82,11 +82,13 @@ func  add_profile(myIP:String = GlobalState.myIP,username:String = "",profile_pi
 	table_dict["myIP"] = {"data_type":"text", "primary_key": true, "not_null": true}
 	table_dict["username"] = {"data_type":"text"}
 	table_dict["profile_pic"] = {"data_type": "blob"}
+	table_dict["crypto_key"] = {"data_type": "text"}
 	db.create_table(table_name, table_dict)
 	
 	var data_dict: Dictionary = Dictionary()
 	data_dict["myIP"] = myIP
 	data_dict["username"] = username
+	data_dict["crypto_key"] = e2ee.generate_key().save_to_string()
 	if profile_pic != null:
 		data_dict["profile_pic"] = encode_to_blob(profile_pic)
 	if db.insert_row(table_name, data_dict):
@@ -101,6 +103,11 @@ func  get_profiles() -> Array:
 		var profile: Dictionary = {}
 		profile["myIP"] = record["myIP"]
 		profile["username"] = record["username"]
+		if record.has("crypto_key") and record["crypto_key"] != null and not record["crypto_key"].is_empty():
+			profile["crypto_key"] = CryptoKey.new()
+			profile["crypto_key"].load_from_string(record["crypto_key"])
+		else:
+			profile["crypto_key"] = null
 		if record["profile_pic"] != null and not record["profile_pic"].is_empty():
 			profile["profile_pic"] = decode_to_object(record["profile_pic"])
 		else:
@@ -121,18 +128,31 @@ func update_profile(myIP:String = GlobalState.myIP ,username:String = "",profile
 		return OK
 	return FAILED
 
-func  add_contact(contactIP:String,username:String = "",profile_pic:Texture2D = null,myIP:String = GlobalState.myIP ) -> Error:
+func delete_profile(myIP:String = GlobalState.myIP) -> Error:
+	if  myIP.is_empty() : return FAILED
+	var table_name: String = "me"
+	var query_conditions:String = "myIP = '" + myIP +"'"
+	if db.delete_rows(table_name,query_conditions):
+		for contact in get_contacts(myIP):
+			delete_contact(contact["contactIP"],myIP)
+		return OK
+	return FAILED
+
+func  add_contact(contactIP:String,username:String = "",profile_pic:Texture2D = null,crypto_key:CryptoKey = null,myIP:String = GlobalState.myIP ) -> Error:
 	if contactIP.is_empty() or myIP.is_empty(): return FAILED
 	var table_name: String = str("contact"+myIP).replace(".","")
 	var table_dict: Dictionary = Dictionary()
 	table_dict["contactIP"] = {"data_type":"text", "primary_key": true, "not_null": true}
 	table_dict["username"] = {"data_type":"text"}
 	table_dict["profile_pic"] = {"data_type": "blob"}
+	table_dict["crypto_key"] = {"data_type": "text"}
 	db.create_table(table_name, table_dict)
 	
 	var data_dict: Dictionary = Dictionary()
 	data_dict["contactIP"] = contactIP
 	data_dict["username"] = username
+	if crypto_key != null:
+		data_dict["crypto_key"] = crypto_key.save_to_string(true)
 	if profile_pic != null:
 		data_dict["profile_pic"] = encode_to_blob(profile_pic)
 	if db.insert_row(table_name, data_dict):
@@ -147,6 +167,11 @@ func  get_contacts(myIP:String = GlobalState.myIP) -> Array:
 	for record in selected_array:
 		var profile: Dictionary = {}
 		profile["contactIP"] = record["contactIP"]
+		if record["crypto_key"] != null and not record["crypto_key"].is_empty():
+			profile["crypto_key"] = CryptoKey.new()
+			profile["crypto_key"].load_from_string(record["crypto_key"],true)
+		else:
+			profile["crypto_key"] = null
 		profile["username"] = record["username"]
 		if record["profile_pic"] != null and not record["profile_pic"].is_empty():
 			profile["profile_pic"] = decode_to_object(record["profile_pic"])
@@ -155,13 +180,15 @@ func  get_contacts(myIP:String = GlobalState.myIP) -> Array:
 		output.append(profile)
 	return output
 
-func update_contact(contactIP:String,username:String = "",profile_pic:Texture2D = null,myIP:String = GlobalState.myIP ) -> Error:
+func update_contact(contactIP:String,username:String = "",profile_pic:Texture2D = null,crypto_key:CryptoKey = null,myIP:String = GlobalState.myIP) -> Error:
 	if contactIP.is_empty() or myIP.is_empty() : return FAILED
 	var table_name: String =str("contact"+myIP).replace(".","")
 	var data_dict: Dictionary = Dictionary()
 	var query_conditions:String = "contactIP = '" + contactIP+"'"
 	if not username.is_empty():
 		data_dict["username"] = username
+	if crypto_key != null:
+		data_dict["crypto_key"] = crypto_key.save_to_string(true)
 	if profile_pic != null:
 		data_dict["profile_pic"] = encode_to_blob(profile_pic)
 	if db.update_rows(table_name,query_conditions , data_dict):
@@ -173,9 +200,11 @@ func delete_contact(contactIP:String,myIP:String = GlobalState.myIP) -> Error:
 	var table_name: String =str("contact"+myIP).replace(".","")
 	var query_conditions:String = " contactIP = '" + contactIP+"'"
 	if db.delete_rows(table_name,query_conditions):
+		table_name = str("m" + myIP + contactIP).replace(".","").strip_escapes()
+		db.drop_table(table_name)
 		return OK
 	return FAILED
-	
+
 func encode_to_blob(obj:Variant) -> PackedByteArray:
 	var output:PackedByteArray = Marshalls.base64_to_raw(Marshalls.variant_to_base64(obj,true))
 	return output

@@ -41,9 +41,7 @@ func _ready():
 func _process(_delta):
 	while len(P2P.new_messages) > 0:
 		var message: Message = P2P.new_messages.pop_at(0)
-		if message.origin_ip != myIP:
-			GlobalState.usingDB.add_contact(message.origin_ip,message.origin_username)
-			myContactsChanged.emit()
+		myContactsChanged.emit()
 		new_message.emit(message)
 	while len(P2P.new_online) > 0:
 		var item = P2P.new_online.pop_at(0)

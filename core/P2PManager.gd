@@ -17,7 +17,7 @@ func _ready():
 func _init(new_address:String = "*") -> void:
 	address = new_address
 	
-func _process(delta):
+func _process(_delta):
 	if not process:
 		return
 	server.poll()
@@ -37,15 +37,27 @@ func get_message(peer:PacketPeerUDP) -> void:
 	var error:Error = json.parse(packet_str)
 	if error == OK:
 		var message: Message = Message.from_json(json)
+		var key:CryptoKey
+		for profile in GlobalState.usingDB.get_profiles():
+			if GlobalState.myIP == profile["myIP"]:
+				key = profile["crypto_key"]
+		message.decrypt(key)
+		GlobalState.usingDB.update_contact(message.origin_ip,"",null,message.origin_pubkey)
 		if message.is_system_message:
 			handle_system(message)
 		else:
 			if message.origin_ip == GlobalState.myIP: return
+			GlobalState.usingDB.add_contact(message.origin_ip,message.origin_username,null,message.origin_pubkey)
 			GlobalState.usingDB.save_message(peer.get_packet_ip(),message)
 			new_messages.append(message)
 
 func send_message(recieveAddress: String, message:Message) -> Error:
 	if message == null or recieveAddress.is_empty() : return FAILED
+	var key:CryptoKey
+	for profile in GlobalState.usingDB.get_contacts():
+		if recieveAddress == profile["contactIP"]:
+			key = profile["crypto_key"]
+	message.encrypt(key)
 	var err:Error
 	for peer in peers:
 		if not peer.is_socket_connected():
@@ -85,7 +97,8 @@ func get_responding_IP(ips:Array) -> void:
 
 func handle_system(message:Message) -> void:
 	if message.command == "online":
-		message.data = Marshalls.base64_to_variant(message.data,true)
-		new_online.append([message.origin_ip,message.data["pic"]])
+		if not message.data.is_empty():
+			var data = Marshalls.base64_to_variant(message.data,true)
+			new_online.append([message.origin_ip,data["pic"]])
 	if message.command == "respondingIP":
 		respondingIP.emit(message.origin_ip)
