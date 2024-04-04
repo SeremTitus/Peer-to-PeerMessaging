@@ -4,6 +4,7 @@ var count = 0
 const CHAT_SELECT = preload("res://GUI/chat_select.tscn")
 
 func _ready() -> void:
+	%menu.hide()
 	if GlobalState.myIP.is_empty(): $generateProfile.popup()
 	GlobalState.myIPChanged.connect(setup_myHeader_info)
 	GlobalState.myIPChanged.connect(setup_contact_select)
@@ -24,3 +25,16 @@ func setup_contact_select() -> void:
 		var new_child = CHAT_SELECT.instantiate()
 		new_child.contactIP = profile["contactIP"]
 		%ChatsContainer.add_child(new_child)
+
+
+func _on_mypic_gui_input(event):
+	if event is InputEventMouseButton and event.pressed and event.button_index == 2:
+		%menu.popup()
+
+func _on_menu_close_requested():
+	%menu.hide()
+
+func _on_delete_pressed():
+	if GlobalState.usingDB.delete_profile(GlobalState.myIP) == OK:
+		GlobalState.myIP = ""
+		%menu.hide()

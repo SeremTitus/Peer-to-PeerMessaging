@@ -27,8 +27,8 @@ font_size = 20
 shader = ExtResource("1_wpnr1")
 
 [node name="generateProfile" type="Window"]
-initial_position = 2
-size = Vector2i(500, 300)
+initial_position = 1
+size = Vector2i(500, 314)
 borderless = true
 script = ExtResource("1_sy2vv")
 
@@ -75,10 +75,37 @@ expand_mode = 2
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="IPLabel" type="Label" parent="PanelContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="left" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "<"
+
+[node name="Space2" type="Control" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="IPLabel" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "127.00.00.00"
 horizontal_alignment = 1
+
+[node name="Space3" type="Control" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="right" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ">"
+
+[node name="Space4" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
 
 [node name="GridContainer" type="GridContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
@@ -112,5 +139,7 @@ filters = PackedStringArray("*.jpg", "*.jpeg", "*.png", "*.webp", "*.bmp", "*.kt
 
 [connection signal="about_to_popup" from="." to="." method="_on_about_to_popup"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/Pic/icon" to="." method="_on_profile_rect_gui_input"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/left" to="." method="next_ip" binds= [false]]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/right" to="." method="next_ip" binds= [true]]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Save" to="." method="_on_save_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]

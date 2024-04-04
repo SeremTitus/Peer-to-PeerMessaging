@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://iy7fa52wjrvs"]
+[gd_scene load_steps=15 format=3 uid="uid://iy7fa52wjrvs"]
 
 [ext_resource type="Script" path="res://GUI/Main.gd" id="1_e6cta"]
 [ext_resource type="Shader" path="res://GUI/CircularIcon.gdshader" id="2_eco23"]
@@ -38,6 +38,20 @@ corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lvbk8"]
+bg_color = Color(0.180392, 0.180392, 0.180392, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wip0t"]
+bg_color = Color(0.282353, 0.282353, 0.282353, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -103,6 +117,29 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_b6kea")
 theme_override_styles/focus = SubResource("StyleBoxFlat_b6kea")
 text = "New chat"
 
+[node name="menu" type="Window" parent="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2"]
+unique_name_in_owner = true
+transparent_bg = true
+title = "Delete This Profile"
+position = Vector2i(150, 57)
+size = Vector2i(150, 40)
+visible = false
+transient = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/menu"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="delete" type="Button" parent="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/menu/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_lvbk8")
+theme_override_styles/hover = SubResource("StyleBoxFlat_wip0t")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_lvbk8")
+text = "Delete"
+
 [node name="HSeparator" type="HSeparator" parent="Body/Sibebar/VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
@@ -130,4 +167,8 @@ visible = false
 [node name="generateProfile" parent="." instance=ExtResource("4_imfmt")]
 visible = false
 
+[connection signal="gui_input" from="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/mypic" to="." method="_on_mypic_gui_input"]
+[connection signal="gui_input" from="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/IPLable" to="." method="_on_mypic_gui_input"]
 [connection signal="pressed" from="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/AddContact" to="AddContact" method="popup"]
+[connection signal="close_requested" from="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/menu" to="." method="_on_menu_close_requested"]
+[connection signal="pressed" from="Body/Sibebar/VBoxContainer/PanelContainer/PanelContainer/HBoxContainer2/menu/VBoxContainer/delete" to="." method="_on_delete_pressed"]
