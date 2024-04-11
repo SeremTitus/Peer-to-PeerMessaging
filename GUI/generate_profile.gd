@@ -55,6 +55,7 @@ func  btn_visibility():
 	
 func _on_about_to_popup():
 	%IPLabel.text = ""
+	%username.text = ""
 	available_ips.clear()
 	GlobalState.P2P.get_responding_IP(GlobalState.generate_myIP())
 	btn_visibility()
@@ -63,14 +64,11 @@ func _on_save_pressed():
 	var pic:Resource
 	if pic_changed:
 		pic = %icon.texture
-	if %IPLabel.text.is_empty():
-		if not GlobalState.verifiedIPs.is_empty():
-			GlobalState.myIP = GlobalState.verifiedIPs[0]
-			%IPLabel.text = GlobalState.myIP
-	else:
-		GlobalState.myIP =  %IPLabel.text
-	GlobalState.usingDB.add_profile(%IPLabel.text,%username.text,pic)	
+	if %IPLabel.text.is_empty() and  not available_ips.is_empty():
+			%IPLabel.text = available_ips[0]
+	GlobalState.usingDB.add_profile(%IPLabel.text,%username.text,pic)
 	self.hide()
+	GlobalState.myIP =  %IPLabel.text
 
 func _on_file_dialog_file_selected(path):
 	var new_texture:Texture2D = load(path)

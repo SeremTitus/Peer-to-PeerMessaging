@@ -7,5 +7,6 @@ android/build
 exports
 .godot
 *.tmp
+.vscode
 buildbin
 android
