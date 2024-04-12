@@ -1,8 +1,10 @@
 class_name P2PManager extends Node
 
 signal respondingIP(ip:String)
-var new_messages:Array =[]
-var new_online: Array = []
+signal scaned_near_by(ip:String,username: String, pic:Texture)
+
+signal new_message(message: Message)
+signal new_online(ip:String, pic:Texture)
 
 const UDP_port:int = 24524
 var address:String = "*"
@@ -49,7 +51,7 @@ func get_message(peer:PacketPeerUDP) -> void:
 			if message.origin_ip == GlobalState.myIP: return
 			GlobalState.usingDB.add_contact(message.origin_ip,message.origin_username,null,message.origin_pubkey)
 			GlobalState.usingDB.save_message(peer.get_packet_ip(),message)
-			new_messages.append(message)
+			new_message.emit(message)
 
 func send_message(recieveAddress: String, message:Message) -> Error:
 	if message == null or recieveAddress.is_empty() : return FAILED
@@ -99,6 +101,8 @@ func handle_system(message:Message) -> void:
 	if message.command == "online":
 		if not message.data.is_empty():
 			var data = Marshalls.base64_to_variant(message.data,true)
-			new_online.append([message.origin_ip,data["pic"]])
+			new_online.emit(message.origin_ip,data["pic"])
 	if message.command == "respondingIP":
 		respondingIP.emit(message.origin_ip)
+	if message.command == "nearby":
+		respondingIP.emit(message)

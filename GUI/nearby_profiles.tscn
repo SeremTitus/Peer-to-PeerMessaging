@@ -1,0 +1,147 @@
+[gd_scene load_steps=9 format=3 uid="uid://s27reyukq5el"]
+
+[ext_resource type="Script" path="res://GUI/nearby_profiles.gd" id="1_ypnkj"]
+[ext_resource type="Shader" path="res://GUI/CircularIcon.gdshader" id="2_o7d2b"]
+[ext_resource type="Texture2D" uid="uid://d3rf6aw43rb02" path="res://assets/DefaultProfilePic.jpeg" id="3_h8g5k"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qd543"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.137255, 0.137255, 0.137255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.92549, 0.796078, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_aa2am"]
+font_size = 20
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2xr2w"]
+shader = ExtResource("2_o7d2b")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rruaf"]
+bg_color = Color(0.180392, 0.180392, 0.180392, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ti1te"]
+bg_color = Color(0.282353, 0.282353, 0.282353, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="NearbyProfiles" type="Window"]
+initial_position = 1
+size = Vector2i(500, 314)
+borderless = true
+script = ExtResource("1_ypnkj")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qd543")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = " x "
+
+[node name="Space" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Nearby Profile"
+label_settings = SubResource("LabelSettings_aa2am")
+horizontal_alignment = 1
+
+[node name="Space3" type="Control" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="menu" type="Window" parent="."]
+unique_name_in_owner = true
+transparent_bg = true
+title = "Add Nearby Profile"
+initial_position = 2
+size = Vector2i(275, 155)
+visible = false
+transient = true
+exclusive = true
+always_on_top = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="menu"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="menu/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+
+[node name="pic" type="TextureRect" parent="menu/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_2xr2w")
+layout_mode = 2
+texture = ExtResource("3_h8g5k")
+expand_mode = 2
+
+[node name="username" type="Label" parent="menu/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Unnamed Contact"
+text_overrun_behavior = 4
+max_lines_visible = 1
+
+[node name="ip" type="Label" parent="menu/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1.000.000"
+text_overrun_behavior = 4
+max_lines_visible = 1
+
+[node name="Add" type="Button" parent="menu/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_rruaf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ti1te")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rruaf")
+text = "Add to Contact"
+
+[connection signal="about_to_popup" from="." to="." method="_on_about_to_popup"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Button" to="." method="hide"]
+[connection signal="close_requested" from="menu" to="menu" method="hide"]
+[connection signal="pressed" from="menu/VBoxContainer/Add" to="." method="_on_add_pressed"]

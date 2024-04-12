@@ -1,5 +1,8 @@
 extends PanelContainer
 
+signal notify_offline
+signal notify_online
+
 @export var contactIP:String:
 	set(value):
 		contactIP = value
@@ -12,10 +15,16 @@ func _ready():
 	%date.text = ""
 	%unreadcount.text = ""
 	setup_info()
-	GlobalState.userOnline.connect(online)
+	GlobalState.P2P.new_online.connect(online)
 	GlobalState.currentChatChanged.connect(on_change_current)
 	_on_timer_check_online_timeout()
 	on_change_current()
+
+func override(Username: String = "", Pic: Texture = null):
+	if not Username.is_empty():
+		%username.text = Username
+	if Pic != null:
+		%pic.texture = Pic
 	
 
 func setup_info() -> void:
@@ -57,18 +66,21 @@ func on_change_current():
 	else:
 		new_style.bg_color = Color("#2e2e2e")
 	add_theme_stylebox_override("panel",new_style)
-	
 
 func _on_timer_check_online_timeout():
 	GlobalState.P2P.request_check_online(contactIP)
-	
+
 func offline():
 	var new_style = get_theme_stylebox("panel").duplicate(true)
 	new_style.set_border_width_all(0)
 	add_theme_stylebox_override("panel",new_style)
-	
+	notify_offline.emit()
+	%TimerChangeOffline.stop()
+
 func online(ip,set_pic):
 	if ip == contactIP:
+		if %TimerChangeOffline.is_stopped():
+			notify_online.emit()
 		%TimerChangeOffline.stop()
 		%TimerChangeOffline.start()
 		if set_pic != null:
@@ -82,7 +94,6 @@ func online(ip,set_pic):
 func _on_window_about_to_popup():
 	%menu.position =Vector2(position.x+300,position.y+150)
 	%username2.text = %username.text
-
 
 func _on_menu_close_requested():
 	%menu.hide()

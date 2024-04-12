@@ -4,9 +4,6 @@ signal myIPChanged
 signal myContactsChanged
 signal currentChatChanged
 
-signal new_message(message)
-signal userOnline(IpString:String,pic: Texture2D)
-
 var myIP:String:
 	set(value):
 		myIP = value
@@ -31,24 +28,13 @@ var verifiedIPs: Array = []:
 
 func _ready():
 	add_child(P2P)
-	userOnline.connect(update_pic)
+	P2P.new_online.connect(func(ip,pic):usingDB.update_contact(ip,"",pic))
 	P2P.respondingIP.connect(func(x) :
 		verifiedIPs.append(x)
 		verifiedIPs = verifiedIPs
 		)
+	P2P.new_message.connect(func(_message): myContactsChanged.emit())
 	P2P.get_responding_IP(generate_myIP())
-
-func _process(_delta):
-	while len(P2P.new_messages) > 0:
-		var message: Message = P2P.new_messages.pop_at(0)
-		myContactsChanged.emit()
-		new_message.emit(message)
-	while len(P2P.new_online) > 0:
-		var item = P2P.new_online.pop_at(0)
-		userOnline.emit(item[0],item[1])
-		
-func update_pic(ip,pic) -> void:
-	usingDB.update_contact(ip,"",pic)
 
 func generate_myIP() -> Array:
 	var goodIP: Array = []

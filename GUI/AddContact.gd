@@ -6,7 +6,7 @@ extends Window
 const DEFAULT_PROFILE_PIC = preload("res://assets/DefaultProfilePic.jpeg")
 
 func _ready():
-	GlobalState.userOnline.connect(update_info)
+	GlobalState.P2P.new_online.connect(update_info)
 	GlobalState.myIPChanged.connect(self.hide)
 
 func update_info(ip,set_pic):

@@ -7,8 +7,8 @@ var offlineTimer: Timer = Timer.new()
 
 func _ready():
 	GlobalState.currentChatChanged.connect(on_current_change)
-	GlobalState.userOnline.connect(online)
-	GlobalState.new_message.connect(on_new_message)
+	GlobalState.P2P.new_online.connect(online)
+	GlobalState.P2P.new_message.connect(on_new_message)
 	on_current_change()
 	offlineTimer.autostart = true
 	offlineTimer.wait_time =10
